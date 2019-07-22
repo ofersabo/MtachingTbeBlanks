@@ -1,0 +1,177 @@
+----Dataset Statistics----
+
+Statistics for sentence.bert_length:
+        Lengths: Mean: 38.964017857142856, Standard Dev: 8.061669111097526, Max: 94, Min: 14
+Statistics for sentence.bert-offsets_length:
+        Lengths: Mean: 27.357357142857143, Standard Dev: 6.779204769072875, Max: 77, Min: 6
+Statistics for sentence.bert-type-ids_length:
+        Lengths: Mean: 38.964017857142856, Standard Dev: 8.061669111097526, Max: 94, Min: 14
+Statistics for sentence.mask_length:
+        Lengths: Mean: 27.357357142857143, Standard Dev: 6.779204769072875, Max: 77, Min: 6
+Statistics for sentence.token_characters_length:
+        Lengths: Mean: 27.357357142857143, Standard Dev: 6.779204769072875, Max: 77, Min: 6
+Statistics for sentence.num_tokens:
+        Lengths: Mean: 38.964017857142856, Standard Dev: 8.061669111097526, Max: 94, Min: 14
+Statistics for sentence.num_token_characters:
+        Lengths: Mean: 10.398660714285715, Standard Dev: 1.89276300094395, Max: 37, Min: 4
+
+10 Random instances:
+Instance 3223:
+        Instance with fields:
+         sentence: TextField of length 37 with text:
+                [songwriter, and, _t_s, producer, ,, _h_s, eliot, kennedy, -, who, had, previously, worked, with,
+                bands, such, as, spice, girls, and, take, that, -, once, said, ", they, are, probably, the, best,
+                group, i, have, worked, with, .]
+                and TokenIndexers : {'bert': 'PretrainedBertIndexer', 'token_characters': 'TokenCharactersIndexer'}
+         label: LabelField with label: P106 in namespace: 'labels'.'
+
+Instance 33628:
+        Instance with fields:
+         sentence: TextField of length 29 with text:
+                [during, world, war, ii, ,, when, axis, powers, occupied, the, kingdom, of, yugoslavia, ,, 17, -,
+                year, -, old, _h_s, mija, aleksic, attended, high, school, in, _t_s, kragujevac, .]
+                and TokenIndexers : {'bert': 'PretrainedBertIndexer', 'token_characters': 'TokenCharactersIndexer'}
+         label: LabelField with label: P551 in namespace: 'labels'.'
+
+Instance 9448:
+        Instance with fields:
+         sentence: TextField of length 17 with text:
+                [_h_s, puyo, pop, fever, (, ,, is, a, _t_s, puzzle, video, game, developed, by, sonic, team, .]
+                and TokenIndexers : {'bert': 'PretrainedBertIndexer', 'token_characters': 'TokenCharactersIndexer'}
+         label: LabelField with label: P136 in namespace: 'labels'.'
+
+Instance 19623:
+        Instance with fields:
+         sentence: TextField of length 31 with text:
+                [meredith, was, the, son, of, _t_s, john, walsingham, cooke, meredith, and, the, brother, of, sir,
+                william, ralph, meredith, ,, _h_s, richard, martin, meredith, ,, thomas, graves, meredith, and,
+                charles, meredith, .]
+                and TokenIndexers : {'bert': 'PretrainedBertIndexer', 'token_characters': 'TokenCharactersIndexer'}
+         label: LabelField with label: P22 in namespace: 'labels'.'
+
+Instance 21977:
+        Instance with fields:
+         sentence: TextField of length 19 with text:
+                [_h_s, laura, teani, (, born, 13, march, 1991, ), is, an, italian, water, polo, player, of, _t_s,
+                italy, .]
+                and TokenIndexers : {'bert': 'PretrainedBertIndexer', 'token_characters': 'TokenCharactersIndexer'}
+         label: LabelField with label: P27 in namespace: 'labels'.'
+
+Instance 51879:
+        Instance with fields:
+         sentence: TextField of length 13 with text:
+                [mathe, altery, is, the, daughter, of, french, _t_s, tenor, _h_s, mario, altery, .]
+                and TokenIndexers : {'bert': 'PretrainedBertIndexer', 'token_characters': 'TokenCharactersIndexer'}
+         label: LabelField with label: P412 in namespace: 'labels'.'
+
+Instance 22874:
+        Instance with fields:
+         sentence: TextField of length 21 with text:
+                [belgium, sent, a, delegation, to, compete, at, the, _h_s, 2010, winter, paralympics, in, _t_s,
+                vancouver, ,, british, columbia, ,, canada, .]
+                and TokenIndexers : {'bert': 'PretrainedBertIndexer', 'token_characters': 'TokenCharactersIndexer'}
+         label: LabelField with label: P276 in namespace: 'labels'.'
+
+Instance 6002:
+        Instance with fields:
+         sentence: TextField of length 18 with text:
+                [later, on, he, practiced, _t_s, cello, music, with, alexander, melnikov, and, _h_s, alexander,
+                kniazev, and, valentin, feigin, .]
+                and TokenIndexers : {'bert': 'PretrainedBertIndexer', 'token_characters': 'TokenCharactersIndexer'}
+         label: LabelField with label: P1303 in namespace: 'labels'.'
+
+Instance 28754:
+        Instance with fields:
+         sentence: TextField of length 19 with text:
+                [for, example, ,, the, dutch, version, had, content, from, the, _t_s, dutch, ", _h_s, winkler,
+                prins, ", encyclopedia, .]
+                and TokenIndexers : {'bert': 'PretrainedBertIndexer', 'token_characters': 'TokenCharactersIndexer'}
+         label: LabelField with label: P407 in namespace: 'labels'.'
+
+Instance 25684:
+        Instance with fields:
+         sentence: TextField of length 34 with text:
+                [the, following, _h_s, season, ,, _t_s, belgian, pro, league, club, racing, genk, ,, his, former,
+                club, he, played, whilst, on, loan, ,, renewed, their, interests, signing, him, and, made, a, bid,
+                on, him, .]
+                and TokenIndexers : {'bert': 'PretrainedBertIndexer', 'token_characters': 'TokenCharactersIndexer'}
+         label: LabelField with label: P3450 in namespace: 'labels'.'
+
+2019-07-20 18:24:15,144 - INFO - allennlp.data.vocabulary - Printed vocabulary statistics are only for the part of the vocabulary generated from instances. If vocabulary is constructed by extending saved vocabulary with dataset instances, the directly loaded portion won't be considered here.
+
+
+----Vocabulary Statistics----
+
+
+Top 10 most frequent tokens in namespace 'token_characters':
+        Token: e                Frequency: 634008
+        Token: a                Frequency: 532860
+        Token: t                Frequency: 487540
+        Token: s                Frequency: 470289
+        Token: i                Frequency: 437344
+        Token: n                Frequency: 434228
+        Token: o                Frequency: 400846
+        Token: r                Frequency: 396133
+        Token: h                Frequency: 307383
+        Token: l                Frequency: 242136
+
+Top 10 longest tokens in namespace 'token_characters':
+        Token: e                length: 1       Frequency: 634008
+        Token: a                length: 1       Frequency: 532860
+        Token: t                length: 1       Frequency: 487540
+        Token: s                length: 1       Frequency: 470289
+        Token: i                length: 1       Frequency: 437344
+        Token: n                length: 1       Frequency: 434228
+        Token: o                length: 1       Frequency: 400846
+        Token: r                length: 1       Frequency: 396133
+        Token: h                length: 1       Frequency: 307383
+        Token: l                length: 1       Frequency: 242136
+
+Top 10 shortest tokens in namespace 'token_characters':
+        Token: 之               length: 1       Frequency: 1
+        Token: 千               length: 1       Frequency: 1
+        Token: ±                length: 1       Frequency: 1
+        Token: ذ                length: 1       Frequency: 1
+        Token: ψ                length: 1       Frequency: 1
+        Token: ♥                length: 1       Frequency: 1
+        Token: 喆               length: 1       Frequency: 1
+        Token: 勇               length: 1       Frequency: 1
+        Token: 涵               length: 1       Frequency: 1
+        Token: 茹               length: 1       Frequency: 1
+
+Top 10 most frequent tokens in namespace 'labels':
+        Token: P1001            Frequency: 700
+        Token: P101             Frequency: 700
+        Token: P102             Frequency: 700
+        Token: P105             Frequency: 700
+        Token: P106             Frequency: 700
+        Token: P118             Frequency: 700
+        Token: P123             Frequency: 700
+        Token: P127             Frequency: 700
+        Token: P1303            Frequency: 700
+        Token: P131             Frequency: 700
+
+Top 10 longest tokens in namespace 'labels':
+        Token: P1001            length: 5       Frequency: 700
+        Token: P1303            length: 5       Frequency: 700
+        Token: P1344            length: 5       Frequency: 700
+        Token: P1346            length: 5       Frequency: 700
+        Token: P1408            length: 5       Frequency: 700
+        Token: P1411            length: 5       Frequency: 700
+        Token: P1435            length: 5       Frequency: 700
+        Token: P1877            length: 5       Frequency: 700
+        Token: P1923            length: 5       Frequency: 700
+        Token: P3373            length: 5       Frequency: 700
+
+Top 10 shortest tokens in namespace 'labels':
+        Token: P6               length: 2       Frequency: 700
+        Token: P59              length: 3       Frequency: 700
+        Token: P40              length: 3       Frequency: 700
+        Token: P26              length: 3       Frequency: 700
+        Token: P25              length: 3       Frequency: 700
+        Token: P86              length: 3       Frequency: 700
+        Token: P84              length: 3       Frequency: 700
+        Token: P58              length: 3       Frequency: 700
+        Token: P57              length: 3       Frequency: 700
+        Token: P39              length: 3       Frequency: 700
+2019-07-20 18:24:15,146 - INFO - allennlp.commands.dry_run - writing the vocabulary to /tmp/mtb/vocabulary.

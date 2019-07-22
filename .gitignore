@@ -1,3 +1,8 @@
 *.pyc
 .mypy_cache/
 .pytest_cache/
+.*
+codecov.yml
+pytest.ini
+tmp.txt
+data/

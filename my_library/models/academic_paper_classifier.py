@@ -4,7 +4,7 @@ import numpy
 from overrides import overrides
 import torch
 import torch.nn.functional as F
-
+import allennlp
 from allennlp.common.checks import ConfigurationError
 from allennlp.data import Vocabulary
 from allennlp.modules import FeedForward, Seq2VecEncoder, TextFieldEmbedder
@@ -47,6 +47,7 @@ class AcademicPaperClassifier(Model):
                  abstract_encoder: Seq2VecEncoder,
                  classifier_feedforward: FeedForward,
                  initializer: InitializerApplicator = InitializerApplicator(),
+                 metrics: Dict[str, allennlp.training.metrics.Metric] = None,
                  regularizer: Optional[RegularizerApplicator] = None) -> None:
         super(AcademicPaperClassifier, self).__init__(vocab, regularizer)
 
@@ -66,7 +67,11 @@ class AcademicPaperClassifier(Model):
                                      "input dimension of the abstract_encoder. Found {} and {}, "
                                      "respectively.".format(text_field_embedder.get_output_dim(),
                                                             abstract_encoder.get_input_dim()))
-        self.metrics = {
+        # self.metrics = {
+        #         "accuracy": CategoricalAccuracy(),
+        #         "accuracy3": CategoricalAccuracy(top_k=3)
+        # }
+        self.metrics = metrics or {
                 "accuracy": CategoricalAccuracy(),
                 "accuracy3": CategoricalAccuracy(top_k=3)
         }

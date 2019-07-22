@@ -19,3 +19,7 @@ allennlp train experiments/venue_classifier.json -s /tmp/your_output_dir_here --
 
 This example was written by the AllenNLP team.  You can see a similar example repository written
 by others [here](https://github.com/recognai/get_started_with_deep_learning_for_text_with_allennlp).
+
+
+allennlp dry-run experiments/venue_classifier.json -s /tmp/venue_output_dir --include-package my_library   
+allennlp train experiments/venue_classifier.json -s /tmp/venue_output_dir --include-package my_library
