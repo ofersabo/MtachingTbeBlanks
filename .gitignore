@@ -7,3 +7,4 @@ pytest.ini
 tmp.txt
 data/
 my_library/downlowded_bert/
+experiments/gpu3.jsonnet

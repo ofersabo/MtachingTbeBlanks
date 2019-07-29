@@ -3,6 +3,7 @@ local bert_type = 'bert-base-cased';
 local batch_size = 10;
 local full_training = true;
 local small_dataset = false;
+local lr_with_find = 0.000091;
 // local bert_type = 'bert-large-cased';
 
 {
@@ -52,7 +53,7 @@ local small_dataset = false;
   "trainer": {
     "optimizer": {
         "type": "adam",
-        "lr": 0.000075
+        "lr": lr_with_find
     },
     "num_serialized_models_to_keep": 3,
     "validation_metric": "+accuracy",
