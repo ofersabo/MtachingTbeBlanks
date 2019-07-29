@@ -1,3 +1,10 @@
+local cuda = [0,1,2,3];
+local bert_type = 'bert-base-cased';
+local batch_size = 10;
+local full_training = true;
+local small_dataset = false;
+// local bert_type = 'bert-large-cased';
+
 {
   "dataset_reader": {
     "type": "mtb_reader",
@@ -11,20 +18,18 @@
     "token_indexers": {
       "bert": {
           "type": "bert-pretrained",
-          "pretrained_model": "bert-base-cased",
+          "pretrained_model": bert_type,
           "do_lowercase": false,
           "use_starting_offsets": true
       }
     }
   },
-//  "train_data_path": "data/train_100K.json",
-//  "validation_data_path": "data/val_5K.json",
-  "train_data_path": "data/train_10K.json",
-  "validation_data_path": "data/val_100.json",
+  "train_data_path":  if small_dataset then "data/train_small.json" else if full_training then "data/train_100K.json" else "data/train_10K.json",
+  "validation_data_path": if small_dataset then "data/val_small.json" else if full_training then "data/val_5K.json" else "data/val_100.json",
   "model": {
     "type": "bert_for_mtb",
-    "bert_model": "bert-base-cased",
-    "cuda_device": 1,
+    "bert_model": bert_type,
+//    "cuda_device": cuda,
     "text_field_embedder": {
         "allow_unmatched_keys": true,
         "embedder_to_indexer_map": {
@@ -33,7 +38,7 @@
         "token_embedders": {
             "bert": {
               "type": "bert-pretrained",
-              "pretrained_model":  "bert-base-cased",
+              "pretrained_model":  bert_type,
               "top_layer_only": true,
               "requires_grad": true
             }
@@ -42,18 +47,18 @@
   },
   "iterator": {
     "type": "basic",
-    "batch_size": 1
+    "batch_size": batch_size
   },
   "trainer": {
     "optimizer": {
         "type": "adam",
-        "lr": 0.0001
+        "lr": 0.000075
     },
     "num_serialized_models_to_keep": 3,
     "validation_metric": "+accuracy",
     "num_epochs": 75,
-    "grad_norm": 1.0,
-    "patience": 25,
-    "cuda_device": 1
+//    "grad_norm": 1.0,
+//    "patience": 75,
+    "cuda_device": cuda
   }
 }

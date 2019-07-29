@@ -6,3 +6,4 @@ codecov.yml
 pytest.ini
 tmp.txt
 data/
+my_library/downlowded_bert/
