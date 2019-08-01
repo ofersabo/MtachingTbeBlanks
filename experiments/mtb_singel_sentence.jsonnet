@@ -1,14 +1,14 @@
 local cuda = [0,1,2,3];
 local bert_type = 'bert-base-cased';
-local batch_size = 10;
+local batch_size = 1;
 local full_training = true;
 local small_dataset = false;
-local lr_with_find = 0.000091;
+local lr_with_find = 0.000001;
 // local bert_type = 'bert-large-cased';
 
 {
   "dataset_reader": {
-    "type": "mtb_reader",
+    "type": "mtb_single_reader",
     "tokenizer": {
       "type": "word",
       "word_splitter": {
@@ -28,7 +28,7 @@ local lr_with_find = 0.000091;
   "train_data_path":  if small_dataset then "data/train_small.json" else if full_training then "data/train_100K.json" else "data/train_10K.json",
   "validation_data_path": if small_dataset then "data/val_small.json" else if full_training then "data/val_5K.json" else "data/val_100.json",
   "model": {
-    "type": "bert_for_mtb",
+    "type": "mtb_single",
     "bert_model": bert_type,
 //    "cuda_device": cuda,
     "text_field_embedder": {

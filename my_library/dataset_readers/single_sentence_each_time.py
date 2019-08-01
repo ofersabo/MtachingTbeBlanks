@@ -52,7 +52,7 @@ def addStartEntityTokens(d):
 
     return h_start_location, tail_start_location+2
 
-@DatasetReader.register("mtb_reader")
+@DatasetReader.register("mtb_single_reader")
 class MTBDatasetReader(DatasetReader):
     """
     Reads a JSON-lines file containing papers from the Semantic Scholar database, and creates a
@@ -103,37 +103,25 @@ class MTBDatasetReader(DatasetReader):
     @overrides
     def text_to_instance(self, data: dict, relation_type: int = None) -> Instance:  # type: ignore
         # pylint: disable=arguments-differ
-        N_relations = []
-        location_list = []
-        all_tokens_sentences = []
+        tokens_sentences = []
+        fields = {}
+        sentences_location = []
         for i,K_examples in enumerate(data[TRAIN_DATA]):
-            toknized_sentences = []
-            sentences_location = []
-            tokens_sentences = []
             for rel in K_examples:
                 head_location,tail_location = addStartEntityTokens(rel)
                 tokenized_tokens = self._tokenizer.tokenize(" ".join(rel["tokens"]))
-
                 tokens_field = TextField(tokenized_tokens, self._token_indexers)
+                fields.update({'sen'+str(i): tokens_field})
+
                 locations = MetadataField({"head":head_location,"tail":tail_location})
                 tokens_sentences.append(MetadataField(tokenized_tokens))
-
                 sentences_location.append(locations)
-                toknized_sentences.append(tokens_field)
-            assert len(sentences_location) == len(toknized_sentences) == len(tokens_sentences)
-            sentences_location = ListField(sentences_location)
-            tokens_sentences = ListField(tokens_sentences)
-            toknized_sentences = ListField(toknized_sentences)
 
-            all_tokens_sentences.append(tokens_sentences)
-            location_list.append(sentences_location)
-            N_relations.append(toknized_sentences)
+        assert len(sentences_location) == len(tokens_sentences)
+        location_list = ListField(sentences_location)
+        tokens_sentences = ListField(tokens_sentences)
 
-        assert len(N_relations) == len(location_list) == len(all_tokens_sentences)
-        N_relations = ListField(N_relations)
-        location_list = ListField(location_list)
-        all_tokens_sentences = ListField(all_tokens_sentences)
-        fields = {'sentences': N_relations,"locations":location_list,"clean_tokens":all_tokens_sentences}
+        fields.update({"locations":location_list,"clean_tokens":tokens_sentences})
 
         test_dict = data[TEST_DATA]
         head_location,tail_location = addStartEntityTokens(test_dict)
@@ -144,6 +132,6 @@ class MTBDatasetReader(DatasetReader):
         fields['test_location'] = locations
 
         if relation_type is not None:
-            fields['label'] = IndexField(relation_type,N_relations)
+            fields['label'] = IndexField(relation_type,tokens_sentences)
         return Instance(fields)
 

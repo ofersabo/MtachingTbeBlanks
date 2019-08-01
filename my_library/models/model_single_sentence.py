@@ -47,7 +47,7 @@ BERT_BASE_CONFIG = {"attention_probs_dropout_prob": 0.1,
                    }
 
 
-@Model.register('bert_for_mtb')
+@Model.register('mtb_single')
 class BertEmbeddingsMTB(Model):
     def __init__(self,
                  vocab: Vocabulary,
@@ -77,43 +77,37 @@ class BertEmbeddingsMTB(Model):
 
 
     @overrides
-    def forward(self,  sentences, locations, test, test_location,clean_tokens,
+    def forward(self, sen0,sen1,sen2,sen3,sen4 , locations, test, test_location,clean_tokens,
                 label = None) -> Dict[str, torch.Tensor]:
 
-        tensor_of_matrices = torch.zeros(0,5,self.bert_type_model['hidden_size']*2).to(self.device)
-        test_matrix = torch.zeros(0,self.bert_type_model['hidden_size']*2).to(self.device)
-        relation_representation = self.embbedings(sentences)
-        test_proxy = self.embbedings(test)
+        tensor_of_matrices = torch.zeros(0,self.bert_type_model['hidden_size']*2).to(self.device)
 
-        for batch_input in range(relation_representation.size(0)):
-            matrix_all_N_relation = torch.zeros(0,self.bert_type_model['hidden_size']*2).to(self.device)
-            for i in range(relation_representation.size(1)):
-                head, tail = locations[batch_input][i][0]['head'], locations[batch_input][i][0]['tail']
-                indices = Variable(torch.LongTensor([[head, tail]])).to(self.device)
-                x = relation_representation[batch_input, i, :, :, :].to(self.device)
-                concat_represntentions = self.extractor(x,indices).to(self.device)
-                concat_represntentions = torch.renorm(concat_represntentions, 2, 0, 1)
-                matrix_all_N_relation = torch.cat((matrix_all_N_relation, concat_represntentions),0).to(self.device)
-
-            tensor_of_matrices = torch.cat((tensor_of_matrices,matrix_all_N_relation.unsqueeze(0)),0).to(self.device)
-
-            head, tail = test_location[batch_input]['head'], test_location[batch_input]['tail']
+        my_local_sentences = [sen0,sen1,sen2,sen3,sen4]
+        for i,this_sentence in enumerate(my_local_sentences):
+            bert_sentence = self.embbedings(this_sentence)
+            head, tail = locations[0][i]['head'], locations[0][i]['tail']
             indices = Variable(torch.LongTensor([[head, tail]])).to(self.device)
-            x = test_proxy[batch_input, :, :].to(self.device)
-            test_concat = self.extractor(x, indices)
-            test_concat = torch.renorm(test_concat, 2, 0, 1)
-            test_matrix = torch.cat((test_matrix, test_concat), 0).to(self.device)
+            x = bert_sentence.to(self.device)
+            concat_represntentions = self.extractor(x,indices).to(self.device)
+            concat_represntentions = torch.renorm(concat_represntentions, 2, 0, 1)
+            tensor_of_matrices = torch.cat((tensor_of_matrices,concat_represntentions),0).to(self.device)
 
-        test_matrix = test_matrix.unsqueeze(1)
-        tensor_of_matrices = tensor_of_matrices.permute(0,2,1)
-        scores = torch.matmul(test_matrix,tensor_of_matrices).squeeze(1).to(self.device)
+        test_bert = self.embbedings(test)
+        head, tail = test_location[0]['head'], test_location[0]['tail']
+        indices = Variable(torch.LongTensor([[head, tail]])).to(self.device)
+        test_concat = self.extractor(test_bert, indices)
+
+        # test_concat = self.relation_layer_norm(test_concat)
+        test_concat = torch.renorm(test_concat, 2, 0, 1)
+        test_concat = test_concat.permute(1, 0)
+
+        scores = torch.matmul(tensor_of_matrices,test_concat).to(self.device)
         output_dict = {"scores": scores}
         if label is not None:
-            label = label.squeeze(1)
-            loss = self.crossEntropyLoss(scores, label)
+            loss = self.crossEntropyLoss(scores.permute(1,0),label.squeeze(1))
             output_dict["loss"] = loss
             for metric in self.metrics.values():
-                metric(scores, label)
+                metric(scores.permute(1,0), label.squeeze(1))
 
         return output_dict
 
