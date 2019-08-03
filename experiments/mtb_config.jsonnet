@@ -1,9 +1,9 @@
-local cuda = [0,1,2,3];
+local cuda = [0,1,2,3,4,5,6,7];
 local bert_type = 'bert-base-cased';
-local batch_size = 10;
-local full_training = true;
+local batch_size = 32;
+local full_training = false;
 local small_dataset = false;
-local lr_with_find = 0.000091;
+local lr_with_find = 0.00081;
 // local bert_type = 'bert-large-cased';
 
 {

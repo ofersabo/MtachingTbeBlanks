@@ -89,6 +89,7 @@ class BertEmbeddingsMTB(Model):
             matrix_all_N_relation = torch.zeros(0,self.bert_type_model['hidden_size']*2).to(self.device)
             for i in range(relation_representation.size(1)):
                 head, tail = locations[batch_input][i][0]['head'], locations[batch_input][i][0]['tail']
+                tail = tail + 1
                 indices = Variable(torch.LongTensor([[head, tail]])).to(self.device)
                 x = relation_representation[batch_input, i, :, :, :].to(self.device)
                 concat_represntentions = self.extractor(x,indices).to(self.device)
