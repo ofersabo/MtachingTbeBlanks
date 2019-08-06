@@ -7,6 +7,8 @@ from allennlp.commands import main
 config_file = "experiments/mtb_config.jsonnet"
 
 # Use overrides to train on CPU.
+# overrides = json.dumps({"trainer":{"cuda_device": -1},"iterator": {"type": "basic", "batch_size": 4}})
+#
 overrides = json.dumps({"train_data_path": "data/train_small.json","trainer":{"cuda_device": -1},
   "validation_data_path": "data/val_small.json","iterator": {"type": "basic", "batch_size": 4}})
 #

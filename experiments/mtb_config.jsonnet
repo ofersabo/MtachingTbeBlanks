@@ -1,9 +1,9 @@
-local cuda = [0,1,2,3,4,5,6,7];
+local cuda = [0,1,2,3];
 local bert_type = 'bert-base-cased';
-local batch_size = 32;
+local batch_size = 10;
 local full_training = false;
 local small_dataset = false;
-local lr_with_find = 0.00081;
+local lr_with_find = 0.0001;
 // local bert_type = 'bert-large-cased';
 
 {
@@ -12,7 +12,7 @@ local lr_with_find = 0.00081;
     "tokenizer": {
       "type": "word",
       "word_splitter": {
-        "type": "bert-basic",
+        "type": "ofer-bert-basic",
         "do_lower_case": false
       }
     },
@@ -21,7 +21,7 @@ local lr_with_find = 0.00081;
           "type": "bert-pretrained",
           "pretrained_model": bert_type,
           "do_lowercase": false,
-          "use_starting_offsets": true
+          "use_starting_offsets": false
       }
     }
   },
@@ -34,7 +34,7 @@ local lr_with_find = 0.00081;
     "text_field_embedder": {
         "allow_unmatched_keys": true,
         "embedder_to_indexer_map": {
-            "bert": ["bert", "bert-offsets"]
+            "bert": ["bert"]
         },
         "token_embedders": {
             "bert": {
