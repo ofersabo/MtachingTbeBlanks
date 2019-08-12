@@ -18,8 +18,7 @@ head_end_token = '[unused2]'  # fixme check if this indeed the token they used i
 tail_start_token = '[unused3]'
 tail_end_token = '[unused4]'
 
-TRAIN_DATA = "meta_train"
-TEST_DATA = "meta_test"
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -79,6 +78,8 @@ class MTBDatasetReader(DatasetReader):
         self._tokenizer = tokenizer or WordTokenizer()
         self._token_indexers = token_indexers or {"tokens": SingleIdTokenIndexer()}
         self.spacy_splitter = SpacyWordSplitter(keep_spacy_tokens=True)
+        self.TRAIN_DATA = "meta_train"
+        self.TEST_DATA = "meta_test"
 
     @overrides
     def _read(self, file_path):
@@ -96,7 +97,7 @@ class MTBDatasetReader(DatasetReader):
         N_relations = []
         location_list = []
         all_tokens_sentences = []
-        for i, K_examples in enumerate(data[TRAIN_DATA]):
+        for i, K_examples in enumerate(data[self.TRAIN_DATA]):
             toknized_sentences = []
             sentences_location = []
             clean_text_for_debug = []
@@ -129,7 +130,7 @@ class MTBDatasetReader(DatasetReader):
         all_tokens_sentences = ListField(all_tokens_sentences)
         fields = {'sentences': N_relations, "locations": location_list, "clean_tokens": all_tokens_sentences}
 
-        test_dict = data[TEST_DATA]
+        test_dict = data[self.TEST_DATA]
         tokenized_tokens = self._tokenizer.tokenize(" ".join(test_dict["tokens"]))
         head_location, tail_location = self.addStartEntityTokens(tokenized_tokens, test_dict['h'], test_dict['t'])
         test_clean_text_for_debug = MetadataField(tokenized_tokens)

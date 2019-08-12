@@ -14,24 +14,37 @@ overrides = json.dumps({"train_data_path": "data/train_small.json","trainer":{"c
 #
 # overrides = json.dumps({"train_data_path": "data/train_small.json",
 #   "validation_data_path": "data/val_small.json"})
-
-serialization_dir = "/tmp/debug_mtb"
+model_location = "fixed_code/layer_norm_learnable_param/"
+output_file = "predictor.txt"
 
 # Training will fail if the serialization directory already
 # has stuff in it. If you are running the same training loop
 # over and over again for debugging purposes, it will.
 # Hence we wipe it out in advance.
 # BE VERY CAREFUL NOT TO DO THIS FOR ACTUAL TRAINING!
-shutil.rmtree(serialization_dir, ignore_errors=True)
+
+'''
+sage: allennlp predict [-h] [--output-file OUTPUT_FILE]
+                            [--weights-file WEIGHTS_FILE]
+                            [--batch-size BATCH_SIZE] [--silent]
+                            [--cuda-device CUDA_DEVICE]
+                            [--use-dataset-reader]
+                            [--dataset-reader-choice {train,validation}]
+                            [-o OVERRIDES] [--predictor PREDICTOR]
+                            [--include-package INCLUDE_PACKAGE]
+                            archive_file input_file
+'''
 
 # Assemble the command into sys.argv
 sys.argv = [
     "allennlp",  # command name, not used by main
-    "train",
-    config_file,
-    "-s", serialization_dir,
+    "predict",
+    model_location,
+    "data/output.jsonl",
+    "--output-file", model_location + output_file,
     "--include-package", "my_library",
-    "-o", overrides,
+    "--predictor", "mtb-predictor"
+    # "-o", overrides,
 ]
 
 main()

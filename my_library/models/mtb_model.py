@@ -10,6 +10,7 @@ from pytorch_pretrained_bert import BertForQuestionAnswering as HuggingFaceBertQ
 from pytorch_pretrained_bert import BertModel as BertModel
 from pytorch_pretrained_bert import BertConfig
 from pytorch_pretrained_bert.tokenization import BasicTokenizer
+from allennlp.nn.regularizers.regularizers import L2Regularizer
 from torch.autograd import Variable
 from allennlp.common import JsonDict
 from allennlp.models.model import Model
@@ -17,6 +18,7 @@ from allennlp.data.vocabulary import Vocabulary
 from allennlp.modules.span_extractors import EndpointSpanExtractor
 from allennlp.training.metrics import CategoricalAccuracy
 from my_library.dataset_readers.mtb_reader import head_start_token, tail_start_token
+from allennlp.nn import InitializerApplicator, RegularizerApplicator
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -46,32 +48,42 @@ BERT_BASE_CONFIG = {"attention_probs_dropout_prob": 0.1,
                     "type_vocab_size": 2,
                     "vocab_size": 30522
                    }
-
+linear = "linear"
 
 @Model.register('bert_for_mtb')
 class BertEmbeddingsMTB(Model):
     def __init__(self,
                  vocab: Vocabulary,
                  text_field_embedder: TextFieldEmbedder,
+                 number_of_linear_layers : int = 2,
                  metrics: Dict[str, allennlp.training.metrics.Metric] = None,
-                 # cuda_device : int = 1,
+                 renorm_method: str = None,
+                 regularizer: RegularizerApplicator = None,
                  bert_model: str = None,
-                 # ,load_model_from: str = None
                  ) -> None:
-        super().__init__(vocab)
+        super().__init__(vocab,regularizer)
         self.embbedings = text_field_embedder
         self.bert_type_model = BERT_BASE_CONFIG if "base" in bert_model else BERT_LARGE_CONFIG
         self.extractor = EndpointSpanExtractor(input_dim=self.bert_type_model['hidden_size'], combination="x,y")
         self.crossEntropyLoss   = torch.nn.CrossEntropyLoss()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.metrics = metrics or {
-            "accuracy": CategoricalAccuracy(),
-            "accuracy3": CategoricalAccuracy(top_k=3)
+            "accuracy": CategoricalAccuracy()
         }
-        self.liner_layer = torch.nn.Linear(self.bert_type_model['hidden_size']*2,1000)
+        self.first_liner_layer = torch.nn.Linear(self.bert_type_model['hidden_size']*2,self.bert_type_model['hidden_size']*2)
+        self.second_liner_layer = torch.nn.Linear(self.bert_type_model['hidden_size']*2,self.bert_type_model['hidden_size']*2)
+        # self.third_layer = torch.nn.Linear(self.bert_type_model['hidden_size']*2,self.bert_type_model['hidden_size']*2)
+        # self.linear_layers = [self.first_liner_layer,self.second_liner_layer]
+        # self.linear_layers =  [torch.nn.Linear(self.bert_type_model['hidden_size']*2,self.bert_type_model['hidden_size']*2) for i in range(3)]
+
+        self.number_of_linear_layers = number_of_linear_layers
         self.relation_layer_norm = torch.nn.LayerNorm(torch.Size([self.bert_type_model['hidden_size']*2]), elementwise_affine=True)
-        self.head_token_index = 1
+        self.head_token_index = 1 # fixme this should be as argument
         self.tail_token_index = 3
+        self.tanh = torch.nn.Tanh()
+        self.drop_layer = torch.nn.Dropout(p=0.2)
+        self.renorm_method = renorm_method or linear
+
         # if load_model_from:
         #     self.load(self.Model.get_params() ,serialization_dir=load_model_from,cuda_device=cuda_device)
 
@@ -97,8 +109,8 @@ class BertEmbeddingsMTB(Model):
                 concat_represntentions = self.extract_embeddings_of_start_tokens(bert_context_for_relation, i ,
                                                                              batch_input, head, tail)
 
-                concat_represntentions = self.renorm_vector(concat_represntentions)
-                matrix_all_N_relation = torch.cat((matrix_all_N_relation, concat_represntentions),0).to(self.device)
+                final_represnetation = self.renorm_vector(concat_represntentions)
+                matrix_all_N_relation = torch.cat((matrix_all_N_relation, final_represnetation),0).to(self.device)
 
             matrix_all_N_relation = matrix_all_N_relation.unsqueeze(0)
             tensor_of_matrices = torch.cat((tensor_of_matrices,matrix_all_N_relation),0).to(self.device)
@@ -109,10 +121,11 @@ class BertEmbeddingsMTB(Model):
                 logger.warning("Problem")
                 toekns_list = self.reassemble_sentence_for_debug(test, batch_input, i)
                 test_bert = self.embbedings(test)
-            test_concat = self.extract_embeddings_of_start_tokens(test_bert, i, batch_input, head, tail)
-            test_concat = self.renorm_vector(test_concat)
 
-            test_matrix = torch.cat((test_matrix, test_concat), 0).to(self.device)
+            test_concat = self.extract_embeddings_of_start_tokens(test_bert, i, batch_input, head, tail)
+            final_query_representation = self.renorm_vector(test_concat)
+
+            test_matrix = torch.cat((test_matrix, final_query_representation), 0).to(self.device)
 
         test_matrix = test_matrix.unsqueeze(1)
         tensor_of_matrices = tensor_of_matrices.permute(0,2,1)
@@ -128,8 +141,22 @@ class BertEmbeddingsMTB(Model):
         return output_dict
 
     def renorm_vector(self, concat_represntentions):
-        return torch.renorm(concat_represntentions, 2, 0, 1)
+        if self.renorm_method != linear:
+            return torch.renorm(concat_represntentions, 2, 0, 1)
+
         # return self.relation_layer_norm(concat_represntentions)
+        x = concat_represntentions
+        x = self.first_liner_layer(x)
+        x = self.tanh(x)
+        x = self.drop_layer(x)
+        x = self.second_liner_layer(x)
+        # for i in range(self.number_of_linear_layers):
+        #     x = self.linear_layers[i]
+        #     if i < self.number_of_linear_layers -1:
+        #         x = self.tanh(x)
+        #         x = self.drop_layer(x)
+
+        return x
 
     def debug_issue(self, bert_context_for_relation, sentences, test, test_bert):
         if bert_context_for_relation.size(-2) != sentences['bert'].size(-1):
