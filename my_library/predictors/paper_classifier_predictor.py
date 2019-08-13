@@ -7,6 +7,14 @@ import json
 
 json_file = open("data/fewrel_mapping.json","r")
 id2rel_name = json.load(json_file)
+def softmax(x):
+    x = np.array(x)
+    x -= np.max(x)
+    deno = sum(np.exp(x))
+    proba = np.exp(x) / deno
+    np.set_printoptions(precision=2)
+    new_datalist = ["{:.2f}".format(value) for value in proba]
+    return str(new_datalist)
 
 @Predictor.register('mtb-predictor')
 class MTBClassifierPredictor(Predictor):
@@ -21,6 +29,7 @@ class MTBClassifierPredictor(Predictor):
         output_dict["answer"] = answer
         output_dict["prediction"] = str(prediction)
         output_dict["gold"] = str(gold_pred)
+        output_dict["probability"] = str(softmax(scores))
 
         for i,relation in enumerate(inputs[self._dataset_reader.TRAIN_DATA]):
             relation = relation[0]

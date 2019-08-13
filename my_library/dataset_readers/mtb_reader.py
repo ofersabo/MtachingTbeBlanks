@@ -18,8 +18,6 @@ head_end_token = '[unused2]'  # fixme check if this indeed the token they used i
 tail_start_token = '[unused3]'
 tail_end_token = '[unused4]'
 
-
-
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 

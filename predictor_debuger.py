@@ -4,18 +4,8 @@ import sys
 
 from allennlp.commands import main
 
-config_file = "experiments/mtb_config.jsonnet"
-
-# Use overrides to train on CPU.
-# overrides = json.dumps({"trainer":{"cuda_device": -1},"iterator": {"type": "basic", "batch_size": 4}})
-#
-overrides = json.dumps({"train_data_path": "data/train_small.json","trainer":{"cuda_device": -1},
-  "validation_data_path": "data/val_small.json","iterator": {"type": "basic", "batch_size": 4}})
-#
-# overrides = json.dumps({"train_data_path": "data/train_small.json",
-#   "validation_data_path": "data/val_small.json"})
-model_location = "fixed_code/layer_norm_learnable_param/"
-output_file = "predictor.txt"
+model_location = "fixed_code/grad_true_two_layers_A/"
+output_file = "predictor.jsonl"
 
 # Training will fail if the serialization directory already
 # has stuff in it. If you are running the same training loop

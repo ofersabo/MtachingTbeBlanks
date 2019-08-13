@@ -97,8 +97,7 @@ class BertEmbeddingsMTB(Model):
 
         bert_context_for_relation = self.embbedings(sentences)
         test_bert = self.embbedings(test)
-
-        self.debug_issue(bert_context_for_relation, sentences, test, test_bert)
+        # self.debug_issue(bert_context_for_relation, sentences, test, test_bert)
 
         for batch_input in range(bert_context_for_relation.size(0)):
             matrix_all_N_relation = torch.zeros(0,self.bert_type_model['hidden_size']*2).to(self.device)
@@ -117,10 +116,7 @@ class BertEmbeddingsMTB(Model):
 
             # test query
             head, tail = self.get_head_tail_locations(test['bert'][batch_input, :])
-            if head > test_bert.size(1) or tail > test_bert.size(1):
-                logger.warning("Problem")
-                toekns_list = self.reassemble_sentence_for_debug(test, batch_input, i)
-                test_bert = self.embbedings(test)
+            # test_bert = self.debug_query_sentence(test, test_bert, head, tail, batch_input, i)
 
             test_concat = self.extract_embeddings_of_start_tokens(test_bert, i, batch_input, head, tail)
             final_query_representation = self.renorm_vector(test_concat)
@@ -139,6 +135,13 @@ class BertEmbeddingsMTB(Model):
                 metric(scores, label)
 
         return output_dict
+
+    def debug_query_sentence(self, test, test_bert, head, tail, batch_input, i):
+        if head > test_bert.size(1) or tail > test_bert.size(1):
+            logger.warning("Problem")
+            toekns_list = self.reassemble_sentence_for_debug(test, batch_input, i)
+            test_bert = self.embbedings(test)
+        return test_bert
 
     def renorm_vector(self, concat_represntentions):
         if self.renorm_method != linear:
