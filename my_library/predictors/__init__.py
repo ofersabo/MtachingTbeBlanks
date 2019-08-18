@@ -1,1 +1,1 @@
-from my_library.predictors.paper_classifier_predictor import MTBClassifierPredictor
+from my_library.predictors.fewrel_analyze_predictor import MTBClassifierPredictor

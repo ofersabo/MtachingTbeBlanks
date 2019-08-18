@@ -58,6 +58,7 @@ class BertEmbeddingsMTB(Model):
                  number_of_linear_layers : int = 2,
                  metrics: Dict[str, allennlp.training.metrics.Metric] = None,
                  renorm_method: str = None,
+                 skip_connection: bool = False,
                  regularizer: RegularizerApplicator = None,
                  bert_model: str = None,
                  ) -> None:
@@ -72,6 +73,7 @@ class BertEmbeddingsMTB(Model):
         }
         self.first_liner_layer = torch.nn.Linear(self.bert_type_model['hidden_size']*2,self.bert_type_model['hidden_size']*2)
         self.second_liner_layer = torch.nn.Linear(self.bert_type_model['hidden_size']*2,self.bert_type_model['hidden_size']*2)
+        self.do_skip_connection = skip_connection
         # self.third_layer = torch.nn.Linear(self.bert_type_model['hidden_size']*2,self.bert_type_model['hidden_size']*2)
         # self.linear_layers = [self.first_liner_layer,self.second_liner_layer]
         # self.linear_layers =  [torch.nn.Linear(self.bert_type_model['hidden_size']*2,self.bert_type_model['hidden_size']*2) for i in range(3)]
@@ -148,11 +150,12 @@ class BertEmbeddingsMTB(Model):
             return torch.renorm(concat_represntentions, 2, 0, 1)
 
         # return self.relation_layer_norm(concat_represntentions)
-        x = concat_represntentions
-        x = self.first_liner_layer(x)
+        x = self.first_liner_layer(concat_represntentions)
         x = self.tanh(x)
         x = self.drop_layer(x)
         x = self.second_liner_layer(x)
+        if self.do_skip_connection:
+            x = x + concat_represntentions
         # for i in range(self.number_of_linear_layers):
         #     x = self.linear_layers[i]
         #     if i < self.number_of_linear_layers -1:

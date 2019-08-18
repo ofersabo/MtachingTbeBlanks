@@ -26,12 +26,13 @@ local lr_with_find = 0.00001;
       }
     }
   },
-  "train_data_path":  if small_dataset then "data/train_small.json" else if full_training then "data/train_1M.json" else "data/train_10K.json",
+  "train_data_path":  if small_dataset then "data/train_small.json" else if full_training then "data/train_100K.json" else "data/train_10K.json",
   "validation_data_path": if small_dataset then "data/val_small.json" else if full_training then "data/val_5K.json" else "data/val_5K.json",
   "model": {
     "type": "bert_for_mtb",
     "bert_model": bert_type,
     "number_of_linear_layers": 2,
+    "skip_connection": true,
     "text_field_embedder": {
         "allow_unmatched_keys": true,
         "embedder_to_indexer_map": {
