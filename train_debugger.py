@@ -4,7 +4,7 @@ import sys
 
 from allennlp.commands import main
 
-config_file = "experiments/mtb_config.jsonnet"
+config_file = "experiments/Glove.jsonnet"
 
 # Use overrides to train on CPU.
 # overrides = json.dumps({"trainer":{"cuda_device": -1},"iterator": {"type": "basic", "batch_size": 4}})

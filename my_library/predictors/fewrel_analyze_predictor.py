@@ -37,13 +37,22 @@ class MTBClassifierPredictor(Predictor):
             output_dict["sentence_"+str(i)] = " ".join(relation["tokens"])
             output_dict["sentence_"+str(i)+"_head"] = relation["h"][0]
             output_dict["sentence_"+str(i)+"_tail"] = relation["t"][0]
-            output_dict["sentence_"+str(i)+"_relation"] = id2rel_name[mapping_set_index_to_realtion_type[i].lower()]
+            try:
+                rel_name = id2rel_name[mapping_set_index_to_realtion_type[i].lower()]
+            except KeyError:
+                rel_name = mapping_set_index_to_realtion_type[i]
+            output_dict["sentence_"+str(i)+"_relation"] = rel_name
 
         relation = inputs[self._dataset_reader.TEST_DATA]
         output_dict["query"] = " ".join(relation["tokens"])
         output_dict["query_head"] = relation["h"][0]
         output_dict["query_tail"] = relation["t"][0]
-        true_relation = id2rel_name[mapping_set_index_to_realtion_type[gold_pred].lower()]
+        try:
+            rel_name = id2rel_name[mapping_set_index_to_realtion_type[gold_pred].lower()]
+        except KeyError:
+            rel_name = mapping_set_index_to_realtion_type[gold_pred]
+
+        true_relation = rel_name
         output_dict["correct_relation"] = true_relation
 
         return output_dict

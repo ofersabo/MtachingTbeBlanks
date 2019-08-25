@@ -21,10 +21,6 @@ tail_end_token = '[unused4]'
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-def replace_positions(locations):
-    locations = [locations[3], locations[4], locations[1], locations[2]]
-
-
 def find_closest_distance_between_entities(head_start_location, head_end_location, tail_start_location,
                                            tail_end_location):
     min_distance = 99999
@@ -144,8 +140,20 @@ class MTBDatasetReader(DatasetReader):
         return Instance(fields)
 
     def addStartEntityTokens(self, tokens_list, head_full_data, tail_full_data):
-        head_start_location, head_end_location = self.find_locations(head_full_data, tokens_list)
-        tail_start_location, tail_end_location = self.find_locations(tail_full_data, tokens_list)
+        if len(head_full_data[0]) > len(tail_full_data[0]): # this is for handling nested tail and head entities
+            #for example: head = NEC and tail = NEC corp
+            # solution, make sure no overlapping entities mention
+            head_start_location, head_end_location = self.find_locations(head_full_data, tokens_list)
+            tail_start_location, tail_end_location = self.find_locations(tail_full_data, tokens_list)
+            if tail_start_location[0]>= head_start_location[0] and tail_start_location[0] <= head_end_location[0]:
+                tail_end_location, tail_start_location = self.deny_overlapping(tokens_list, head_end_location,
+                                                                               tail_full_data)
+
+        else:
+            tail_start_location, tail_end_location = self.find_locations(tail_full_data, tokens_list)
+            head_start_location, head_end_location = self.find_locations(head_full_data, tokens_list)
+            if head_start_location[0] >= tail_start_location[0] and head_start_location[0] <= tail_end_location[0]:
+                head_end_location, head_start_location = self.deny_overlapping(tokens_list, tail_end_location,head_full_data)
 
         # todo try different approchs on which entity location to choose
         h_start_location, head_end_location, tail_start_location, tail_end_location = find_closest_distance_between_entities \
@@ -163,6 +171,12 @@ class MTBDatasetReader(DatasetReader):
         tokens_list.insert(tail_end_location + 2 + offset_tail, w[0])  # arbetrary pick a token for that
 
         return h_start_location + 2 - offset_tail, tail_start_location + offset_tail
+
+    def deny_overlapping(self, tokens_list, longest_entity_end_location, shortest_entity_full_data):
+        start_location, end_location = self.find_locations(shortest_entity_full_data, tokens_list[longest_entity_end_location[0]+1:])
+        start_location[0] = start_location[0] + longest_entity_end_location[0]
+        end_location[0] = end_location[0] + longest_entity_end_location[0]
+        return end_location, start_location
 
     def return_lower_text_from_tokens(self, tokens):
         return list(map(lambda x: x.text.lower(), tokens))

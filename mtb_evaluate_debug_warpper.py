@@ -3,7 +3,7 @@ import shutil
 import sys
 
 from allennlp.commands import main
-
+print("11111")
 # config_file = "experiments/mtb_config.jsonnet"
 
 # Use overrides to train on CPU.
@@ -14,7 +14,8 @@ from allennlp.commands import main
 #
 # overrides = json.dumps({"train_data_path": "data/train_small.json",
 #   "validation_data_path": "data/val_small.json"})
-model_location = "fixed_code/grad_true_two_layers_A/"
+model_location = "best_model/archive/"
+
 output_file = "evaluation.txt"
 
 # Training will fail if the serialization directory already
@@ -39,7 +40,7 @@ sys.argv = [
     "allennlp",  # command name, not used by main
     "evaluate",
     model_location,
-    "data/train_10K.json",
+    "data/TACRED_fewshot_2K.json",
     "--output-file", model_location + output_file,
     "--include-package", "my_library"
     # "-o", overrides,
