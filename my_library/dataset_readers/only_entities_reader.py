@@ -34,10 +34,11 @@ def find_closest_distance_between_entities(head_start_location, head_end_locatio
 
 
 @DatasetReader.register("only_entities_reader")
-class onlyEntitiesDatasetReader(DatasetReader):
+class OnlyEntitiesDatasetReader(DatasetReader):
     def __init__(self,
                  lazy: bool = False,
                  tokenizer: Tokenizer = None,
+                 single_entity: str = None,
                  token_indexers: Dict[str, TokenIndexer] = None) -> None:
         super().__init__(lazy)
         self._tokenizer = tokenizer or WordTokenizer()
@@ -45,6 +46,7 @@ class onlyEntitiesDatasetReader(DatasetReader):
         self.spacy_splitter = SpacyWordSplitter(keep_spacy_tokens=True)
         self.TRAIN_DATA = "meta_train"
         self.TEST_DATA = "meta_test"
+        self.single_entity = single_entity
 
     @overrides
     def _read(self, file_path):
@@ -99,5 +101,16 @@ class onlyEntitiesDatasetReader(DatasetReader):
         return Instance(fields)
 
     def create_head_tail_sentence(self, relation: dict) -> str:
-        return head_start_token + " " + relation['h'][0] + " " + head_end_token + " " + tail_start_token + ' ' + \
-               relation['t'][0] + " " + tail_end_token
+        if self.single_entity is None:
+            return head_start_token + " " + relation['h'][0] + " " + head_end_token + " " + tail_start_token + ' ' + \
+                   relation['t'][0] + " " + tail_end_token
+        elif self.single_entity == "head":
+            return head_start_token + " " + relation['h'][0] + " " + head_end_token + " " + tail_start_token + ' ' + \
+                   "_" + " " + tail_end_token
+        elif self.single_entity == "tail":
+            return head_start_token + " " + "_" + " " + head_end_token + " " + tail_start_token + ' ' + \
+                   relation['t'][0] + " " + tail_end_token
+        else:
+            raise AttributeError(
+                "single entity parameter should be head tail or None , but received single entity '{}'"
+                .format(self.single_entity))
