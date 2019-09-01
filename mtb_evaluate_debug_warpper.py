@@ -40,7 +40,7 @@ sys.argv = [
     "allennlp",  # command name, not used by main
     "evaluate",
     model_location,
-    "data/TACRED_fewshot_2K.json",
+    "val.json_10000",
     "--output-file", model_location + output_file,
     "--include-package", "my_library"
     # "-o", overrides,
